@@ -34,6 +34,7 @@ The ultimate goal of this research artifact is a **Bidirectional Closed-Loop Sys
 
 ## 🏗️ System Architecture
 
+
 The project follows a strict "Separation of Concerns" microservice architecture:
 * `main.py`: FastAPI application routing and interactive Swagger UI.
 * `database.py`: PostgreSQL engine and session management.
@@ -90,8 +91,8 @@ uvicorn main:app --reload
 
 ## 🗺️ Development Roadmap
 
-* [x] **Phase 1:** API Bootstrap & Interactive Docs (FastAPI).
-* [x] **Phase 2:** Database Architecture (SQLAlchemy & Pydantic).
-* [ ] **Phase 3:** Data Ingestion Webhooks (`POST` endpoints for volume forecasts).
-* [ ] **Phase 4:** Optimization Algorithm (Task Dispatching Logic).
-* [ ] **Phase 5:** Integration with the Digital Capacity Twin frontend.
+* [x] **Phase 1: API Bootstrap & Core Routing.** Initializing the headless FastAPI architecture, enterprise Swagger UI metadata injection, and health check endpoints.
+* [x] **Phase 2: Stateful Database Architecture.** Dockerized PostgreSQL integration, SQLAlchemy ORM entity mapping (Workers/AGVs), and schema initialization.
+* [ ] **Phase 3: Data Ingestion & Entity Webhooks.** Building `POST` endpoints with strict Pydantic v2 payload validation to dynamically register human workers and autonomous fleet units via API testing tools (Postman).
+* [ ] **Phase 4: Algorithmic Task Dispatching.** Implementing the core optimization logic (e.g., Linear Programming) to route heavy tasks to AGVs (tracking battery decay) and complex tasks to humans (tracking physical fatigue accumulation).
+* [ ] **Phase 5: Digital Twin Telemetry Integration.** Closing the "Macro-Micro Gap" by feeding real-world shift execution costs and time delays back into the overarching stochastic Capacity Twin.
