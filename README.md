@@ -1,64 +1,65 @@
-# 🤖 LSP Workforce & Dispatch API
+# 🤖 B2B Fleet Aggregator API
 
-**Author:** Sandesh Hegde  
-**Architecture:** Headless FastAPI Microservice  
+**Author:** Sandesh Hegde
+
+**Architecture:** Headless FastAPI Microservice (B2B Aggregator)
+
 **Status:** 🚧 Active Development
-
-![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-red?style=for-the-badge)
 
 ## 🎯 The Purpose: What is this?
 
+The **B2B Fleet Aggregator API** is a high-performance middleware designed to bridge the gap between demand-side strategic planning and supply-side physical assets.
 
-The **LSP Workforce & Dispatch API** is the micro-tactical execution engine of the Logistics Service Provider (LSP) ecosystem. 
-
-While the [LSP Digital Capacity Twin](https://github.com/sandesh-s-hegde/digital_capacity_optimizer) handles the **Macro-Strategic layer** (e.g., forecasting global container volumes, routing through international borders, calculating carbon emissions), this FastAPI microservice handles the **Micro-Tactical layer** (e.g., executing the actual work on the warehouse floor). It ingests daily pallet volume forecasts and dynamically allocates warehouse tasks between **Human Workers** and **Automated Guided Vehicles (AGVs)**.
+While the [LSP Digital Capacity Twin](https://github.com/sandesh-s-hegde/digital_capacity_optimizer) serves as the **Macro-Strategic Layer** (forecasting shortfalls and volume surges), this API acts as the **Tactical Execution Engine**. It aggregates commercial vehicle availability from multiple third-party suppliers (e.g., Enterprise, Ryder, Hertz) into a unified, searchable interface for seamless capacity fulfillment.
 
 ## 🧠 The Motivation: Why are we doing this?
-In modern logistics research, there is a massive disconnect between strategic planning and physical execution. A macro-level Digital Twin might calculate that a warehouse needs to process 5,000 pallets today to minimize stockout risk. However, the theoretical model fails in reality if:
-1. The human workforce reaches maximum fatigue levels.
-2. The automated AGV fleet runs out of battery and is stuck at charging stations.
-3. The shift scheduling is mathematically inefficient.
 
-**We are building this API to bridge the "Macro-Micro Gap."** By creating a dedicated, stateful microservice that tracks physical constraints (fatigue scores, battery degradation, shift availability), we transform abstract supply chain strategy into mathematically optimized, real-world task execution.
+In the travel and logistics tech sectors, the "Integration Gap" is a multi-million dollar problem. A strategic model might identify a need for 50 additional vans in Dublin, but the execution fails if:
+
+1. **Fragmentation:** Suppliers use different API standards, making real-time comparison impossible.
+2. **Static Data:** Availability is often outdated, leading to failed bookings and lost revenue.
+3. **Environment Impact:** Legacy systems fail to prioritize low-emission or EV options during the search phase.
+
+**This API solves the "Macro-Micro Gap."** By providing a standardized, stateful microservice that tracks supplier inventory, rates, and carbon telemetry, we transform theoretical capacity needs into real-world, executable bookings.
 
 ## 🔮 Planned Outcomes: Where is this going?
-The ultimate goal of this research artifact is a **Bidirectional Closed-Loop System**:
-1. **Automated Ingestion:** The API will expose `POST` webhooks to automatically catch daily volume targets sent directly from the Macro Digital Twin.
-2. **Algorithmic Dispatching:** It will utilize an optimization algorithm (e.g., Knapsack or Linear Programming) to assign the incoming pallets. It will route heavy, repetitive tasks to AGVs (until batteries hit 20%) and complex, dexterous tasks to Humans (monitoring fatigue accumulation).
-3. **Telemetry Feedback:** Once the shift is simulated, this API will send the *actual* execution cost and time back up to the Macro Twin, allowing the overarching stochastic models to correct themselves based on ground-floor realities.
+
+The ultimate goal is a **Bidirectional, Closed-Loop Ecosystem**:
+
+1. **Standardized Aggregation:** Creating a single source of truth for commercial fleet inventory across multiple global suppliers.
+2. **Algorithmic Selection:** Utilizing weighted optimization (Price vs. CO2 vs. Reliability) to present the most valuable fleet options to the partner.
+3. **Real-Time Telemetry:** Once a booking is completed, the API feeds actual cost and performance data back to the Digital Twin to refine future forecasting models.
 
 ---
 
 ## 🏗️ System Architecture
 
+The project follows a "Clean Architecture" pattern to ensure high scalability and ease of integration:
 
-The project follows a strict "Separation of Concerns" microservice architecture:
-* `main.py`: FastAPI application routing and interactive Swagger UI.
-* `database.py`: PostgreSQL engine and session management.
-* `models.py`: SQLAlchemy ORM entities (The Database Layer).
-* `schemas.py`: Pydantic v2 payload validation (The Ingestion Layer).
+* `main.py`: RESTful Routing, Exception Handling, and Interactive Swagger (OpenAPI) documentation.
+* `database.py`: PostgreSQL engine management with SQLAlchemy Session Pooling.
+* `models.py`: Relational schema definitions for Vehicles, Suppliers, and Bookings.
+* `schemas.py`: Pydantic v2 data contracts for strict request/response validation.
 
 ### 📍 Current Endpoints
-* `GET /` - System health check.
-* `GET /api/v1/workforce/roster` - Fetches the live availability of Human Workers and the AGV Fleet.
+
+* `GET /` - System Health & Versioning.
+* `GET /api/v1/vehicles` - Live Supplier Catalog retrieval.
+* `POST /api/v1/fleet/search` - The core search engine for aggregating available fleet capacity.
 
 ---
 
 ## 🚀 Local Installation & Setup
 
 ### 1. Clone & Environment
+
 ```bash
-git clone https://github.com/sandesh-s-hegde/lsp-workforce-api.git
-cd lsp-workforce-api
+git clone https://github.com/sandesh-s-hegde/b2b-fleet-aggregator-api.git
+cd b2b-fleet-aggregator-api
 python -m venv venv
 
 # Activate (Windows):
-venv\Scripts\activate
-# Activate (Mac/Linux):
-source venv/bin/activate
+.\venv\Scripts\activate
 
 ```
 
@@ -71,10 +72,10 @@ pip install -r requirements.txt
 
 ### 3. Environment Variables
 
-Create a `.env` file in the root directory to connect your database:
+Create a `.env` file in the root directory:
 
 ```env
-DATABASE_URL="postgresql://postgres:password@localhost:5432/workforce_db"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/fleet_db"
 
 ```
 
@@ -85,14 +86,12 @@ uvicorn main:app --reload
 
 ```
 
-*Access the auto-generated interactive Swagger UI documentation at: `http://127.0.0.1:8000/docs*`
-
 ---
 
 ## 🗺️ Development Roadmap
 
-* [x] **Phase 1: API Bootstrap & Core Routing.** Initializing the headless FastAPI architecture, enterprise Swagger UI metadata injection, and health check endpoints.
-* [x] **Phase 2: Stateful Database Architecture.** Dockerized PostgreSQL integration, SQLAlchemy ORM entity mapping (Workers/AGVs), and schema initialization.
-* [ ] **Phase 3: Data Ingestion & Entity Webhooks.** Building `POST` endpoints with strict Pydantic v2 payload validation to dynamically register human workers and autonomous fleet units via API testing tools (Postman).
-* [ ] **Phase 4: Algorithmic Task Dispatching.** Implementing the core optimization logic (e.g., Linear Programming) to route heavy tasks to AGVs (tracking battery decay) and complex tasks to humans (tracking physical fatigue accumulation).
-* [ ] **Phase 5: Digital Twin Telemetry Integration.** Closing the "Macro-Micro Gap" by feeding real-world shift execution costs and time delays back into the overarching stochastic Capacity Twin.
+* [x] **Phase 1: Aggregator Core & API Architecture.** Bootstrapping the FastAPI headless framework with automated OpenAPI 3.1 documentation and system health checks.
+* [x] **Phase 2: Relational Data Persistence.** Designing the PostgreSQL schema using SQLAlchemy ORM to manage complex "Vehicle-to-Supplier" relationships.
+* [ ] **Phase 3: Partner Ingestion & Webhooks.** Implementing `POST` endpoints for dynamic inventory updates and supplier onboarding via Postman/automated telemetry.
+* [ ] **Phase 4: Multi-Criteria Search Algorithm.** Building the core aggregation logic to sort results based on partner-specific KPIs (Lowest Price, Greenest Fleet, or Highest Availability).
+* [ ] **Phase 5: Digital Twin Synchronization.** Developing the closed-loop bridge to automatically trigger fleet searches based on "Capacity Shortfall" signals from the Digital Twin frontend.
