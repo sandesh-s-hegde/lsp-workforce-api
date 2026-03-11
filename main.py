@@ -137,3 +137,24 @@ async def get_fleet_utilization(db: Session = Depends(get_db)):
         "active_bookings": active_bookings,
         "utilization_rate_percentage": round(utilization_rate, 2)
     }
+
+
+@app.delete("/api/v1/vehicles/{vehicle_id}", tags=["Fleet Management"])
+async def retire_vehicle(vehicle_id: str, db: Session = Depends(get_db)):
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == vehicle_id).first()
+
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found.")
+
+    active_booking = db.query(models.Booking).filter(
+        models.Booking.vehicle_id == vehicle_id,
+        models.Booking.status == "Confirmed"
+    ).first()
+
+    if active_booking:
+        raise HTTPException(status_code=400, detail="Cannot retire a vehicle with an active booking.")
+
+    db.delete(vehicle)
+    db.commit()
+
+    return {"detail": f"Vehicle {vehicle_id} successfully retired from the fleet."}
