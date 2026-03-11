@@ -98,3 +98,25 @@ async def get_partner_bookings(partner_id: str, db: Session = Depends(get_db)):
     if not bookings:
         raise HTTPException(status_code=404, detail="No active bookings found for this partner.")
     return bookings
+
+
+@app.patch("/api/v1/bookings/{booking_reference}/cancel", response_model=schemas.BookingResponse,
+           tags=["Booking Engine"])
+async def cancel_booking(booking_reference: str, db: Session = Depends(get_db)):
+    booking = db.query(models.Booking).filter(models.Booking.booking_reference == booking_reference).first()
+
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking reference not found.")
+    if booking.status == "Cancelled":
+        raise HTTPException(status_code=400, detail="Booking is already cancelled.")
+
+    booking.status = "Cancelled"
+
+    vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == booking.vehicle_id).first()
+    if vehicle:
+        vehicle.availability_status = "Available"
+
+    db.commit()
+    db.refresh(booking)
+
+    return booking
