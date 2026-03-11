@@ -120,3 +120,20 @@ async def cancel_booking(booking_reference: str, db: Session = Depends(get_db)):
     db.refresh(booking)
 
     return booking
+
+@app.get("/api/v1/fleet/utilization", tags=["System Analytics"])
+async def get_fleet_utilization(db: Session = Depends(get_db)):
+    total_vehicles = db.query(models.Vehicle).count()
+    available_vehicles = db.query(models.Vehicle).filter(models.Vehicle.availability_status == "Available").count()
+    active_bookings = db.query(models.Booking).filter(models.Booking.status == "Confirmed").count()
+
+    utilization_rate = 0.0
+    if total_vehicles > 0:
+        utilization_rate = ((total_vehicles - available_vehicles) / total_vehicles) * 100
+
+    return {
+        "total_vehicles": total_vehicles,
+        "available_vehicles": available_vehicles,
+        "active_bookings": active_bookings,
+        "utilization_rate_percentage": round(utilization_rate, 2)
+    }
