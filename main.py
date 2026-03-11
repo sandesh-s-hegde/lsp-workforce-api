@@ -20,11 +20,13 @@ app = FastAPI(
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon() -> Response:
+    """Silences the browser's default favicon request error."""
     return Response(status_code=204)
 
 
 @app.get("/", tags=["System"])
 async def root() -> dict:
+    """Health check endpoint to verify the API is online."""
     return {
         "status": "Online",
         "timestamp": datetime.now(),
@@ -34,6 +36,7 @@ async def root() -> dict:
 
 @app.post("/api/v1/vehicles", response_model=schemas.VehicleResponse, tags=["Fleet Management"])
 async def add_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_db)):
+    """Registers a new commercial vehicle into the supplier database."""
     db_vehicle = models.Vehicle(**vehicle.model_dump())
     db.add(db_vehicle)
     db.commit()
@@ -43,11 +46,13 @@ async def add_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_
 
 @app.get("/api/v1/vehicles", response_model=List[schemas.VehicleResponse], tags=["Fleet Management"])
 async def get_all_vehicles(db: Session = Depends(get_db)):
+    """Fetches the entire catalog of available supplier vehicles."""
     return db.query(models.Vehicle).all()
 
 
 @app.post("/api/v1/fleet/search", response_model=List[schemas.VehicleResponse], tags=["Aggregation Engine"])
 async def search_fleet_capacity(request: schemas.SearchRequest, db: Session = Depends(get_db)):
+    """Simulates searching the supplier network for available vehicles based on route criteria."""
     available_vehicles = db.query(models.Vehicle).filter(
         models.Vehicle.availability_status == "Available"
     ).all()
@@ -60,6 +65,7 @@ async def search_fleet_capacity(request: schemas.SearchRequest, db: Session = De
 
 @app.post("/api/v1/bookings", response_model=schemas.BookingResponse, tags=["Booking Engine"])
 async def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
+    """Executes a secure B2B fleet booking and generates a confirmation reference."""
     vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == booking.vehicle_id).first()
 
     if not vehicle:
@@ -94,15 +100,19 @@ async def create_booking(booking: schemas.BookingCreate, db: Session = Depends(g
 
 @app.get("/api/v1/bookings/{partner_id}", response_model=List[schemas.BookingResponse], tags=["Booking Engine"])
 async def get_partner_bookings(partner_id: str, db: Session = Depends(get_db)):
+    """Retrieves all active fleet reservations for a specific B2B partner."""
     bookings = db.query(models.Booking).filter(models.Booking.partner_id == partner_id).all()
+
     if not bookings:
         raise HTTPException(status_code=404, detail="No active bookings found for this partner.")
+
     return bookings
 
 
 @app.patch("/api/v1/bookings/{booking_reference}/cancel", response_model=schemas.BookingResponse,
            tags=["Booking Engine"])
 async def cancel_booking(booking_reference: str, db: Session = Depends(get_db)):
+    """Cancels an active booking and releases the vehicle back into the available fleet pool."""
     booking = db.query(models.Booking).filter(models.Booking.booking_reference == booking_reference).first()
 
     if not booking:
@@ -121,8 +131,10 @@ async def cancel_booking(booking_reference: str, db: Session = Depends(get_db)):
 
     return booking
 
+
 @app.get("/api/v1/fleet/utilization", tags=["System Analytics"])
 async def get_fleet_utilization(db: Session = Depends(get_db)):
+    """Calculates real-time fleet utilization rates and availability metrics."""
     total_vehicles = db.query(models.Vehicle).count()
     available_vehicles = db.query(models.Vehicle).filter(models.Vehicle.availability_status == "Available").count()
     active_bookings = db.query(models.Booking).filter(models.Booking.status == "Confirmed").count()
@@ -141,6 +153,7 @@ async def get_fleet_utilization(db: Session = Depends(get_db)):
 
 @app.delete("/api/v1/vehicles/{vehicle_id}", tags=["Fleet Management"])
 async def retire_vehicle(vehicle_id: str, db: Session = Depends(get_db)):
+    """Safely retires a vehicle from the active catalog if it has no active bookings."""
     vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == vehicle_id).first()
 
     if not vehicle:
