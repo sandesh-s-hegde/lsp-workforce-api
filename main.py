@@ -8,6 +8,8 @@ from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 
 import models
+import time
+from fastapi import Request
 import schemas
 from database import engine, get_db
 
@@ -27,6 +29,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    """Observability: Tracks request latency and injects it into response headers."""
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time-Sec"] = str(round(process_time, 4))
+    return response
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon() -> Response:
