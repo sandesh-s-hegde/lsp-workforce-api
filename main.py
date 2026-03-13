@@ -75,9 +75,9 @@ async def add_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_
 
 
 @app.get("/api/v1/vehicles", response_model=List[schemas.VehicleResponse], tags=["Fleet Management"])
-async def get_all_vehicles(db: Session = Depends(get_db)):
-    """Fetches the entire catalog of available supplier vehicles."""
-    return db.query(models.Vehicle).all()
+async def get_all_vehicles(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """Fetches the catalog of available supplier vehicles with pagination parameters."""
+    return db.query(models.Vehicle).offset(skip).limit(limit).all()
 
 
 @app.post("/api/v1/fleet/search", response_model=List[schemas.VehicleResponse], tags=["Aggregation Engine"])
