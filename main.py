@@ -1,15 +1,14 @@
+import time
 import uuid
 from datetime import datetime
 from typing import List
 
-from fastapi import FastAPI, Response, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from fastapi import FastAPI, Response, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 import models
-import time
-from fastapi import Request
 import schemas
 from database import engine, get_db
 
@@ -21,23 +20,24 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Security: CORS Configuration for Digital Twin Frontend Integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this to specific frontend URLs
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
-    """Observability: Tracks request latency and injects it into response headers."""
+    """Tracks request latency and injects it into response headers."""
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time-Sec"] = str(round(process_time, 4))
     return response
+
 
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon() -> Response:
@@ -49,7 +49,6 @@ async def favicon() -> Response:
 async def health_check(db: Session = Depends(get_db)) -> dict:
     """Deep health check that verifies API uptime and Database connectivity."""
     try:
-        # Ping the database to ensure the connection pool is alive
         db.execute(text("SELECT 1"))
         db_status = "Connected"
     except Exception:
@@ -147,8 +146,7 @@ async def get_partner_bookings(partner_id: str, db: Session = Depends(get_db)):
     return bookings
 
 
-@app.patch("/api/v1/bookings/{booking_reference}/cancel", response_model=schemas.BookingResponse,
-           tags=["Booking Engine"])
+@app.patch("/api/v1/bookings/{booking_reference}/cancel", response_model=schemas.BookingResponse, tags=["Booking Engine"])
 async def cancel_booking(booking_reference: str, db: Session = Depends(get_db)):
     """Cancels an active booking and releases the vehicle back into the available fleet pool."""
     booking = db.query(models.Booking).filter(models.Booking.booking_reference == booking_reference).first()
