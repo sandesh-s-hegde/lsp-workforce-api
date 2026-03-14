@@ -82,6 +82,14 @@ async def add_vehicle(vehicle: schemas.VehicleCreate, db: Session = Depends(get_
     db.refresh(db_vehicle)
     return db_vehicle
 
+@app.post("/api/v1/vehicles/batch", response_model=dict, tags=["Fleet Management"])
+async def add_vehicles_batch(vehicles: List[schemas.VehicleCreate], db: Session = Depends(get_db)):
+    """Ingests a bulk payload of vehicles from a supplier system."""
+    db_vehicles = [models.Vehicle(**v.model_dump()) for v in vehicles]
+    db.add_all(db_vehicles)
+    db.commit()
+    return {"detail": f"Successfully ingested {len(vehicles)} vehicles into the fleet catalog."}
+
 
 @app.get("/api/v1/vehicles", response_model=List[schemas.VehicleResponse], tags=["Fleet Management"])
 async def get_all_vehicles(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
