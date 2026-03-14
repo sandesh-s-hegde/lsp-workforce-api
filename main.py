@@ -7,6 +7,7 @@ from fastapi import FastAPI, Response, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
+from fastapi.security import APIKeyHeader
 
 import models
 import schemas
@@ -27,6 +28,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Security: B2B API Key Authentication
+API_KEY_NAME = "X-API-Key"
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
+
+async def verify_api_key(api_key: str = Depends(api_key_header)):
+    """Validates partner API keys before allowing transactions."""
+    if api_key != "CARTRAWLER-PROD-KEY-99":  # In real life, this checks the database
+        raise HTTPException(status_code=403, detail="Invalid or missing B2B API Key")
 
 
 @app.middleware("http")
@@ -101,7 +111,7 @@ async def search_fleet_capacity(request: schemas.SearchRequest, db: Session = De
 
 
 @app.post("/api/v1/bookings", response_model=schemas.BookingResponse, tags=["Booking Engine"])
-async def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db)):
+async def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db), api_key: str = Depends(verify_api_key)):
     """Executes a secure B2B fleet booking and generates a confirmation reference."""
     vehicle = db.query(models.Vehicle).filter(models.Vehicle.id == booking.vehicle_id).first()
 
