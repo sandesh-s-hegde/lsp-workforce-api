@@ -2,6 +2,7 @@ import time
 import uuid
 from datetime import datetime
 from typing import List
+from sqlalchemy import func
 
 from fastapi import FastAPI, Response, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -227,3 +228,16 @@ async def retire_vehicle(vehicle_id: str, db: Session = Depends(get_db)):
     db.commit()
 
     return {"detail": f"Vehicle {vehicle_id} successfully retired from the fleet."}
+
+@app.get("/api/v1/fleet/revenue", tags=["System Analytics"])
+async def get_financial_metrics(db: Session = Depends(get_db)):
+    """Aggregates total revenue generated from confirmed B2B bookings."""
+    total_revenue = db.query(func.sum(models.Booking.total_price)).filter(
+        models.Booking.status == "Confirmed"
+    ).scalar() or 0.0
+
+    return {
+        "currency": "EUR",
+        "total_revenue_generated": round(total_revenue, 2),
+        "timestamp": datetime.now()
+    }
