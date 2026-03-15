@@ -22,8 +22,8 @@ app = FastAPI(
     description="Enterprise B2B API connecting logistics platforms to commercial rental suppliers.",
     version="1.0.0",
     contact={
-        "name": "Sandesh Hegde",
-        "email": "your.email@example.com",
+        "name": "Sandesh S. Hegde",
+        "email": "sandeshshegde7596@gmail.com",
     },
     license_info={
         "name": "MIT",
