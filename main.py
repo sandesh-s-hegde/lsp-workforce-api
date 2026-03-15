@@ -44,7 +44,8 @@ api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
 
 async def verify_api_key(api_key: str = Depends(api_key_header)):
     """Validates partner API keys before allowing transactions."""
-    if api_key != "PARTNER-PROD-KEY-99":
+    expected_key = os.getenv("B2B_API_KEY", "PARTNER-PROD-KEY-99")
+    if api_key != expected_key:
         raise HTTPException(status_code=403, detail="Invalid or missing B2B API Key")
 
 
