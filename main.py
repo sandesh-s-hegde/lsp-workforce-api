@@ -26,17 +26,26 @@ logger = logging.getLogger("fleet-aggregator")
 
 models.Base.metadata.create_all(bind=engine)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manages startup and shutdown lifecycle events."""
+    logger.info("B2B Fleet Aggregator API is starting up...")
+    yield
+    logger.info("B2B Fleet Aggregator API is shutting down gracefully...")
+
+
 app = FastAPI(
     title="B2B Fleet Aggregator API",
     description="Enterprise B2B API connecting logistics platforms to commercial rental suppliers.",
     version="1.0.0",
     contact={
-        "name": "Sandesh S. Hegde",
-        "email": "sandeshshegde7596@gmail.com",
+        "name": "Sandesh Hegde",
+        "email": "your.email@example.com",
     },
     license_info={
         "name": "MIT",
-    }
+    },
+    lifespan=lifespan
 )
 
 app.add_middleware(
