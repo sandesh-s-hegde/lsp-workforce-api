@@ -10,10 +10,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 from sqlalchemy import text, func
 from sqlalchemy.orm import Session
+import logging
+from contextlib import asynccontextmanager
+from fastapi.responses import JSONResponse
 
 import models
 import schemas
 from database import engine, get_db
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("fleet-aggregator")
 
 models.Base.metadata.create_all(bind=engine)
 
