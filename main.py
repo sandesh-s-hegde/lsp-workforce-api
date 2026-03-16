@@ -59,6 +59,15 @@ app.add_middleware(
 API_KEY_NAME = "X-API-Key"
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=True)
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catches unhandled server errors and prevents stack trace leaks."""
+    logger.error(f"Unhandled server error on {request.url}: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal server error occurred. Please contact system admin."}
+    )
+
 
 async def verify_api_key(api_key: str = Depends(api_key_header)):
     """Validates partner API keys before allowing transactions."""
