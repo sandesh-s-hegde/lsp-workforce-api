@@ -4,7 +4,9 @@
 
 **Architecture:** Headless FastAPI Microservice (B2B Aggregator)
 
-**Status:** 🚀 MVP Deployed / Active Development
+**Status:** 🟢 Live in Production / Active Development
+
+**Live API Documentation:** [Interactive Swagger UI](https://b2b-fleet-api.onrender.com/docs) *(Note: Hosted on Render Free Tier. Please allow 30s for cold start.)*
 
 ## 🎯 The Purpose: What is this?
 
@@ -14,7 +16,7 @@ While the [LSP Digital Capacity Twin](https://github.com/sandesh-s-hegde/digital
 
 ## 🧠 The Motivation: Why are we doing this?
 
-In the travel and logistics tech sectors, the "Integration Gap" is a multi-million dollar problem. A strategic model might identify a need for 50 additional vans in Dublin, but the execution fails if:
+In the travel and logistics tech sectors, the "Integration Gap" is a multi-million dollar problem. A strategic model might identify a need for additional vans in Europe, but the execution fails if:
 
 1. **Fragmentation:** Suppliers use different API standards, making real-time comparison impossible.
 2. **Static Data:** Availability is often outdated, leading to failed bookings and lost revenue.
@@ -47,7 +49,7 @@ The project follows a "Clean Architecture" pattern to ensure high scalability an
 ### 📍 Core Endpoints
 
 **System & Analytics**
-* `GET /api/v1/health` - Deep system health check (API + Database Ping).
+* `GET /api/v1/health` - Deep system health check (API + Database Ping). *Used for automated Uptime telemetry.*
 * `GET /api/v1/fleet/utilization` - Real-time fleet utilization metrics.
 * `GET /api/v1/fleet/revenue` - Aggregates financial telemetry from confirmed B2B bookings.
 
