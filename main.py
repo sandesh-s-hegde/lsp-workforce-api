@@ -35,12 +35,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="B2B Fleet Aggregator API",
-    description="Enterprise B2B API connecting logistics platforms to commercial rental suppliers.",
+    title="🤖 B2B Fleet Aggregator API",
+    description="High-performance middleware bridging macro-strategic forecasting with micro-tactical fleet execution. Features dynamic surge pricing, emission tracking, and multi-supplier aggregation.",
     version="1.0.0",
     contact={
         "name": "Sandesh Hegde",
-        "email": "your.email@example.com",
+        "url": "https://github.com/sandesh-s-hegde/b2b-fleet-aggregator-api",
     },
     license_info={
         "name": "MIT",
