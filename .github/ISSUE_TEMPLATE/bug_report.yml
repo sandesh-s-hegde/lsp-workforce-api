@@ -1,0 +1,37 @@
+name: 🐛 Bug Report
+description: File a bug report to help us improve the system.
+title: "[BUG] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
+  - type: input
+    id: endpoint
+    attributes:
+      label: Affected Endpoint / Module
+      description: Which API endpoint or Python module is failing?
+      placeholder: e.g., /api/v1/health or seed_data.py
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we trigger this bug?
+      value: |
+        1. Run command '...'
+        2. Send payload '....'
+        3. See error '...'
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - Local Development
+        - Render (Production)
+    validations:
+      required: true
