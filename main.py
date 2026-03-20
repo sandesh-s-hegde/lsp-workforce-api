@@ -173,6 +173,20 @@ async def search_fleet_capacity(request: schemas.SearchRequest, db: Session = De
     return sorted_vehicles
 
 
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catches all unhandled server errors to prevent stack-trace leakage."""
+    # In a real system, we would log the 'exc' to Sentry or Datadog here
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal Server Error",
+            "message": "An unexpected systemic anomaly occurred. Our engineering team has been notified.",
+            "path": request.url.path
+        },
+    )
+
+
 @app.post("/api/v1/bookings", response_model=schemas.BookingResponse, tags=["Booking Engine"])
 async def create_booking(booking: schemas.BookingCreate, db: Session = Depends(get_db), api_key: str = Depends(verify_api_key)):
     """Executes a secure B2B fleet booking and generates a confirmation reference."""
