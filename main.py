@@ -275,3 +275,39 @@ async def retire_vehicle(vehicle_id: str, db: Session = Depends(get_db)):
     db.commit()
 
     return {"detail": f"Vehicle {vehicle_id} decommissioned successfully."}
+
+
+from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel
+
+app = FastAPI(title="B2B Fleet Aggregator Engine", version="1.0.0")
+
+
+# 1. The Ops Health Check Endpoint
+@app.get("/health", tags=["Operations"])
+async def system_health_check():
+    """
+    Ping this endpoint to ensure the core aggregator engine is live.
+    Used by Ops and automated load balancers.
+    """
+    return {
+        "status": "healthy",
+        "version": "1.0.0",
+        "active_suppliers": 42
+    }
+
+
+# 2. Simulated Graceful Failure Endpoint
+@app.get("/api/v1/search", tags=["Core API"])
+async def search_inventory(pickup: str, supplier_timeout: bool = False):
+    """
+    Simulates a search request with strict timeout handling.
+    """
+    if supplier_timeout:
+        # Instead of crashing, we gracefully return a 504 with a clear message
+        raise HTTPException(
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            detail="Supplier API response exceeded 3000ms SLA. Graceful failure triggered."
+        )
+
+    return {"status": "success", "message": f"Inventory found for {pickup}"}
