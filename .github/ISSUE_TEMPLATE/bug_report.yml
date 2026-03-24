@@ -1,37 +1,86 @@
-name: 🐛 Bug Report
-description: File a bug report to help us improve the system.
-title: "[BUG] "
+name: 🚨 System Anomaly Report
+description: Escalate a bug, unexpected behavior, or system failure in the API.
+title: "[BUG] <Short description of the issue>"
 labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible.
-  - type: input
-    id: endpoint
+        ### 🛑 Before submitting:
+        * Please check the open issues to ensure this anomaly hasn't already been reported.
+        * **SECURITY WARNING:** Do NOT include any real API keys (`GEMINI_API_KEY`, `B2B_FLEET_API_KEY`), database credentials, or sensitive partner data in this report.
+
+  - type: checkboxes
+    id: preflight
     attributes:
-      label: Affected Endpoint / Module
-      description: Which API endpoint or Python module is failing?
-      placeholder: e.g., /api/v1/health or seed_data.py
+      label: Due Diligence Check
+      options:
+        - label: I have verified that I am not leaking sensitive credentials in this report.
+          required: true
+        - label: I have searched existing issues and found no duplicates.
+          required: true
+
+  - type: input
+    id: component
+    attributes:
+      label: Affected Component / Endpoint
+      description: Which specific API route, middleware, or database module is failing?
+      placeholder: e.g., POST /api/v1/bookings or global_exception_handler()
     validations:
       required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Anomaly Description
+      description: A clear and concise description of the failure.
+    validations:
+      required: true
+
   - type: textarea
     id: reproduction
     attributes:
       label: Steps to Reproduce
-      description: How can we trigger this bug?
+      description: Provide the exact steps, cURL commands, or Python scripts required to trigger the anomaly.
       value: |
-        1. Run command '...'
-        2. Send payload '....'
-        3. See error '...'
+        1. Send a POST request to `/api/v1/...` with the following JSON payload: `{...}`
+        2. Wait for the response...
+        3. Observe the `500 Internal Server Error`...
     validations:
       required: true
+
+  - type: textarea
+    id: expected-vs-actual
+    attributes:
+      label: Expected vs. Actual Behavior
+      description: What did you expect to happen, and what actually happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Tracebacks and System Logs
+      description: Paste any relevant terminal output, Docker logs, or Python tracebacks here. It will be automatically formatted as code.
+      render: shell
+
   - type: dropdown
     id: environment
     attributes:
-      label: Environment
+      label: Execution Environment
+      description: Where did this anomaly occur?
       options:
-        - Local Development
-        - Render (Production)
+        - Local Development (Uvicorn / Docker)
+        - Production (Render / Neon)
+        - CI/CD Pipeline (GitHub Actions)
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: System Context
+      description: What is your operating system and Python version?
+      placeholder: e.g., macOS Sonoma, Python 3.11, FastAPI 0.109.0
     validations:
       required: true
