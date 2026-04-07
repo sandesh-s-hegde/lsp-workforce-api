@@ -4,7 +4,7 @@ First off, thank you for considering contributing to this project! We value coll
 
 ## 🛠️ Local Development Setup
 
-1. **Clone the repository:** `git clone <repo-url>`
+1. **Clone the repository:** `git clone https://github.com/sandesh-s-hegde/b2b-fleet-aggregator-api`
 2. **Create a virtual environment:** `python -m venv venv && source venv/bin/activate`
 3. **Install dependencies:** `pip install -r requirements.txt`
 4. **Run the server:** `uvicorn main:app --reload`
