@@ -31,7 +31,7 @@ In the travel and logistics tech sectors, the "Integration Gap" is a multi-milli
 
 * **Language:** Python 3.11+
 * **Framework:** FastAPI (RESTful routing and OpenAPI 3.1 generation)
-* **Database:** PostgreSQL (via SQLAlchemy ORM & Session Pooling)
+* **Database Architecture:** Fully migrated to **Neon Serverless PostgreSQL** (Frankfurt Region)
 * **Validation:** Pydantic v2 (Strict data contracts)
 * **DevOps:** Docker Compose (IaC) & Windows DX Scripts (`.bat`)
 * **Testing:** Postman Behavior-Driven Development (BDD) automated suites
